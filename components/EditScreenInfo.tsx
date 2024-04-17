@@ -1,8 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 export const EditScreenInfo = ({ path }: { path: string }) => {
-  const { t } = useTranslation();
   const title = t('getStarted');
   const description = t('changeCode');
 

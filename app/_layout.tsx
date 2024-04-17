@@ -1,22 +1,59 @@
-import '../global.css';
+import "../global.css";
 
-import '../translation';
+import "../translation";
 
-import { Stack } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Stack, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
+
+import { AuthProvider, useAuth } from "~/context/AuthContext";
+import { PaperProvider } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(drawer)',
+  initialRouteName: "(protected)"
 };
 
-export default function RootLayout() {
+function RootLayout() {
+  const { authState } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+  useEffect(() => {
+    const inAuthGroup = segments[0] === "(protected)";
+    /*if (!authState?.authenticated && inAuthGroup) {
+      router.replace("/");
+    } else if (authState?.authenticated === true) {*/
+      // router.replace("/(protected)/messages");
+    // }
+  }, [authState]);
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
       <Stack>
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ title: 'Modal', presentation: 'modal' }} />
+        <Stack.Screen name="index" options={{ headerShown: false, title: "Login" }} />
+        <Stack.Screen name="register" options={{ headerShown: true }} />
+        <Stack.Screen name="(protected)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ title: "Modal", presentation: "modal" }} />
       </Stack>
-    </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  }
+});
+
+const AuthRootLayout = () => {
+  return (
+    <AuthProvider>
+      <PaperProvider>
+        <RootLayout />
+      </PaperProvider>
+    </AuthProvider>
+  );
+};
+
+export default AuthRootLayout;
